@@ -1,31 +1,47 @@
 <?php
 use Dompdf\Dompdf;
+use Dompdf\Options;
 require __DIR__."/vendor/autoload.php";
 
-// inicializando o objeto Dompdf
-$dompdf = new Dompdf();
+$options = new Options();
+$options->setIsRemoteEnabled(true);
 
-// Entrada do Codigo HTML
-$codigo_html = '<div class="panel-body">
-                  <p>O Gerador de Texto Lorem Ipsum pode ser utilizado para você que está desenvolvendo seu projeto e precisa de texto aleatório para preencher os espaços e fazer testes. Assim, dá para testar o layout e a formatação antes de utilizar com conteúdo real.</p><p>Exemplo de texto gerado: <i>"lorem ipsum dolor sit amet consectetur adipiscing elit sagittis velit torquent class ornare lobortis litora a duis lectus congue porttitor cubilia turpis inceptos lacinia ex suspendisse maximus tortor enim consequat feugiat pharetra penatibus curae tristique ligula eleifend at auctor tempus"</i></p><p>Palavras-chave: gerador de lorem ipsum, gerar texto aleatório.                </p></div>';
+$dompdf = new Dompdf($options);
 
-// Inserindo o código HTML no nosso arquivo PDF
-$dompdf->loadHtml($codigo_html);
+$url = "https://plsweb.unimeduberaba.com.br:6400/webresources/web/pep/pacienteDocumento/8249f8a4-461b-43bd-9ba8-c0380b1c23ee?id=".$_GET['id']."&simples=true&excluido=false";
 
-// Orientações do papel
+$documento = json_decode(file_get_contents($url));
+
+$DocumentoFinal = $documento->dados[0]->modelo;
+
+$dompdf->loadHtml($DocumentoFinal);
+
 $dompdf->setPaper('A4', 'portrait');
 
-// Renderizar o documento
 $dompdf->render();
 
-// ----------------------------- SAIDAS ------------------------------------------------ //
-
-
-// PDF será gerado automaticamente
 // $dompdf->stream("file.pdf");
-
-
 
 // Attachment em false fará com que o PDF não seja baixado automaticamente
 $dompdf->stream("file.pdf", ["Attachment" => false]);
+
+
+
+
+
+$output = $dompdf->output();
+$fileConv = file_put_contents('file.pdf', $output);
+echo base64_encode($fileConv);
+
+
+
+
+
+
+
+?>
+
+
+
+
 
